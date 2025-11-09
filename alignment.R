@@ -3,23 +3,28 @@ library(tidyverse)
 library(ggseqlogo)
 library(patchwork)
 library(ggplot2)
+library(msa)
 
-# --- Paths to MAFFT alignments ---
+# Load MAFFT alignments
 
-pre2008_mafft_alm <- '/Users/jacobpollard/Documents/Uni/Biology/Second year/Sem 1/BABS/Poster/comp_bio_poster/FASTAs/alm/mafft_pre-2008:08_human_north-america.fasta'
-post2008_mafft_alm <- '/Users/jacobpollard/Documents/Uni/Biology/Second year/Sem 1/BABS/Poster/comp_bio_poster/FASTAs/alm/mafft_alm_post-2008.fasta'
+pre2008_mafft_alm <- 'FASTAs/alm/mafft_pre-2008:08_human_north-america.fasta'
+post2008_mafft_alm <- 'FASTAs/alm/mafft_alm_post-2008.fasta'
 
-# --- Load aligned sequences ---
+# Make them msa objects
 
 seqs_pre2008 <- readAAStringSet(pre2008_mafft_alm)
 seqs_post2008 <- readAAStringSet(post2008_mafft_alm)
 
-# --- Define crop region ---
+# Define cropping positions
 
 start_pos <- 137
 end_pos <- 220
+start_pos1 <- 137
+end_pos1 <- 220
+start_pos2 <- 149
+end_pos2 <- 232
 
-# --- Function to crop sequences and split into characters ---
+# Defining a function to crop and split sequences into lists
 
 crop_and_split <- function(seqs, start, end) {
   seqs_vec <- as.character(seqs)
@@ -31,52 +36,22 @@ crop_and_split <- function(seqs, start, end) {
   alignment_list
 }
 
-# --- Crop sequences ---
+# Crop sequences and split
 
-alignment_pre_list <- crop_and_split(seqs_pre2008, start_pos, end_pos)
-alignment_post_list <- crop_and_split(seqs_post2008, start_pos, end_pos)
+alignment_pre_list <- crop_and_split(seqs_pre2008, start_pos1, end_pos1)
+alignment_post_list <- crop_and_split(seqs_post2008, start_pos2, end_pos2)
 
-# --- Filter out sequences that are all gaps ---
-
-filter_nonempty <- function(alignment_list) {
-  alignment_list[sapply(alignment_list, function(x) any(x != "-"))]
-}
-
-alignment_pre_list <- filter_nonempty(alignment_pre_list)
-alignment_post_list <- filter_nonempty(alignment_post_list)
-
-# --- Convert to matrices for consensus ---
+# Convert lists to matrices
 
 alignment_pre_mat <- do.call(rbind, alignment_pre_list)
 alignment_post_mat <- do.call(rbind, alignment_post_list)
 
-# --- Consensus sequences ---
+# Make consensus seqs
 
 cons_pre <- apply(alignment_pre_mat, 2, function(col) names(sort(table(col), decreasing=TRUE))[1])
 cons_post <- apply(alignment_post_mat, 2, function(col) names(sort(table(col), decreasing=TRUE))[1])
 
-# --- Sequence logo plots ---
-
-pre_logo <- ggseqlogo(alignment_pre_list, method = "prob", seq_type = "aa") +
-  ggtitle("H1N1 HA1: Sialic acid binding region pre-2009 pandemic") +
-  scale_x_continuous(breaks = 1:(end_pos-start_pos+1), labels = start_pos:end_pos) +
-  theme_bw() +
-  theme(axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5),
-        plot.title = element_text(face = "bold", size = 14))
-
-post_logo <- ggseqlogo(alignment_post_list, method = "prob", seq_type = "aa") +
-  ggtitle("H1N1 HA1: Sialic acid binding region post-2009 pandemic") +
-  scale_x_continuous(breaks = 1:(end_pos-start_pos+1), labels = start_pos:end_pos) +
-  theme_bw() +
-  theme(axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5),
-        plot.title = element_text(face = "bold", size = 14))
-
-combined_logos <- pre_logo / post_logo +
-  plot_annotation(title = "Comparison of H1N1 HA1 Sialic Acid Binding Region Pre- and Post-2009 Pandemic",
-                  theme = theme(plot.title = element_text(size = 16, face = "bold")))
-combined_logos
-
-# --- Alignment heatmap with letters ---
+# Define data frame for plotting
 
 seq_df <- data.frame(
   Position = rep(start_pos:end_pos, 2),
@@ -84,30 +59,50 @@ seq_df <- data.frame(
   AA = c(cons_pre, cons_post)
 )
 
-# Define amino acid colours
+# Amino acid colours
 
-aa_colors <- c(
-  A = "#1f77b4", V = "#1f77b4", L = "#1f77b4", I = "#1f77b4", M = "#1f77b4", F = "#1f77b4", W = "#1f77b4", P = "#1f77b4",
-  G = "#7f7f7f",
-  S = "#2ca02c", T = "#2ca02c", C = "#2ca02c", N = "#2ca02c", Q = "#2ca02c",
-  D = "#d62728", E = "#d62728",
-  K = "#ff7f0e", R = "#ff7f0e", H = "#ff7f0e",
-  "-" = "#ffffff"
+aa_type <- c(
+  A = "Hydrophobic", V = "Hydrophobic", L = "Hydrophobic", I = "Hydrophobic",
+  M = "Hydrophobic", F = "Hydrophobic", W = "Hydrophobic", P = "Hydrophobic",
+  G = "Special",
+  S = "Polar", T = "Polar", C = "Polar", N = "Polar", Q = "Polar",
+  D = "Acidic", E = "Acidic",
+  K = "Basic", R = "Basic", H = "Basic",
+  "-" = "Gap"
 )
 
-heatmap_plot <- ggplot(seq_df, aes(x = Position, y = Sequence, fill = AA)) +
-  geom_tile(color = "white") +
+seq_df <- seq_df %>%
+  mutate(Type = aa_type[AA])
+
+# Define colours by type
+
+type_colours <- c(
+  Hydrophobic = "#1f77b4",
+  Polar       = "#2ca02c",
+  Acidic      = "#d62728",
+  Basic       = "#ff7f0e",
+  Special     = "#7f7BBB",
+  Gap         = "#ffffff"
+)
+
+# Heatmap with letters and legend for type
+
+heatmap_plot <- ggplot(seq_df, aes(x = Position, y = Sequence, fill = Type)) +
+  geom_tile(colour = "white") +
   geom_text(aes(label = AA), size = 3, fontface = "bold") +
-  scale_fill_manual(values = aa_colors) +
-  labs(title = "HA1 Consensus Alignment (137–220)",
-       x = "Amino Acid Position", y = "") +
+  scale_fill_manual(values = type_colours) +
+  labs(title = "HA1 Consensus Alignment (137–220) Pre- and Post-2009 Pandemic",
+       x = "Amino Acid Position", y = "Sequence",
+       fill = "AA Type") +
   theme_minimal() +
   theme(axis.text.y = element_text(face = "bold"),
         axis.ticks.y = element_blank(),
-        panel.grid = element_blank(),
-        legend.position = "none")
+        panel.grid = element_blank())
 
-# --- Display plots ---
+# Print plot
 
-combined_logos
 heatmap_plot
+
+# Save heatmap
+
+ggsave("Figures/HA1_consensus_heatmap.png", heatmap_plot, width = 15, height = 1.5, dpi = 300)
