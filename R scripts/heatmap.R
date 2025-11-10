@@ -12,8 +12,8 @@ post2008_mafft_alm <- '/Users/jacobpollard/Documents/Uni/Biology/Second year/Sem
 
 # Make them msa objects
 
-seqs_pre2008 <- readAAStringSet(pre2008_mafft_alm)
-seqs_post2008 <- readAAStringSet(post2008_mafft_alm)
+seqs_pre2008 <- readAAStringSet('/Users/jacobpollard/Documents/Uni/Biology/Second year/Sem 1/BABS/Poster/comp_bio_poster/FASTAs/alm/mafft_pre-2008_swine_NA.fasta')
+seqs_post2008 <- readAAStringSet('/Users/jacobpollard/Documents/Uni/Biology/Second year/Sem 1/BABS/Poster/comp_bio_poster/FASTAs/alm/mafft_post-2008_human_NA.fasta')
 
 # Define cropping positions
 
