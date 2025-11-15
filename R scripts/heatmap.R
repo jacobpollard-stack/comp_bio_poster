@@ -78,13 +78,11 @@ seq_df <- data.frame(
 # Amino acid colours
 
 aa_type <- c(
-  A = "Hydrophobic", V = "Hydrophobic", L = "Hydrophobic", I = "Hydrophobic",
-  M = "Hydrophobic", F = "Hydrophobic", W = "Hydrophobic", P = "Hydrophobic",
-  G = "Special",
-  S = "Polar", T = "Polar", C = "Polar", N = "Polar", Q = "Polar",
-  D = "Acidic", E = "Acidic",
-  K = "Basic", R = "Basic", H = "Basic",
-  "-" = "Gap"
+  A = "Hydrophobic", R = "Basic", N = "Neutral", D = "Acidic",
+  C = "Polar", Q = "Neutral", E = "Acidic", G = "Polar",
+  H = "Basic", I = "Hydrophobic", L = "Hydrophobic", K = "Basic",
+  M = "Hydrophobic", F = "Hydrophobic", P = "Hydrophobic", S = "Polar",
+  T = "Polar", W = "Hydrophobic", Y = "Polar", V = "Hydrophobic"
 )
 
 seq_df <- seq_df %>%
@@ -93,11 +91,11 @@ seq_df <- seq_df %>%
 # Define colours by type
 
 type_colours <- c(
-  Hydrophobic = "#1f77b4",
-  Polar       = "#2ca02c",
-  Acidic      = "#d62728",
-  Basic       = "#ff7f0e",
-  Special     = "#7f7BBB",
+  Hydrophobic = "#221E22",
+  Polar       = "#109648",
+  Acidic      = "#D62839",
+  Basic       = "#255C99",
+  Neutral     = "#5E239D",
   Gap         = "#ffffff"
 )
 

@@ -4,6 +4,7 @@ library(ggseqlogo)
 library(patchwork)
 library(ggplot2)
 library(msa)
+library(reshape2)
 
 # Load aligned MAFFT seqs
 
@@ -32,6 +33,8 @@ vec <- seq(start_pos, end_pos)
 
 # Plot sequence logos
 
+## Pre-pandemic logo
+
 logo_pre <- ggseqlogo(pwm_pre, method = 'bits') +
   ggtitle('Pre-pandemic') +
   theme(plot.title = element_text(hjust = 0.5,
@@ -46,12 +49,14 @@ logo_pre <- ggseqlogo(pwm_pre, method = 'bits') +
     labels = seq(start_pos, end_pos, by = 1)
   )
 
-logo_post <- ggseqlogo(pwm_post, method = 'bits') +
+## Post-pandemic logo
+
+logo_post <- ggseqlogo(pwm_post, method = 'bits', col_scheme = 'chemistry') +
   ggtitle('Post-pandemic') +
-  theme(plot.title = element_text(hjust = 0.5,
-                                  size = 16),
-        axis.text.x = element_text(size = 5,
-                                   angle = 90)) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16),
+    axis.text.x = element_text(size = 5, angle = 90)
+  ) +
   ylab('Bits') +
   scale_x_continuous(
     breaks = seq(1, length(vec), by = 1),
