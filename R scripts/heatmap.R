@@ -105,7 +105,7 @@ heatmap_plot <- ggplot(seq_df, aes(x = Position, y = Sequence, fill = Type)) +
   geom_tile(colour = "white") +
   geom_text(aes(label = AA), size = 3, colour = 'white') +
   scale_fill_manual(values = type_colours) +
-  labs(title = "HA1 Consensus Alignment (137–220) Pre- and Post-2009 Pandemic",
+  labs(title = "HA1 Consensus Alignment of Sialic Acid Binding Region Pre- and Post-2009 H1N1pdm09 Pandemic",
        x = "Amino Acid Position", y = "Sequence",
        fill = "AA Type") +
   theme_minimal() +
@@ -115,7 +115,7 @@ heatmap_plot <- ggplot(seq_df, aes(x = Position, y = Sequence, fill = Type)) +
         legend.text = element_text(size = 9),
         legend.key.size = unit(0.3, 'cm'),
         legend.position = "bottom",,
-        plot.title = element_text(hjust = 0.14, vjust = 1, face = "bold", size = 14))
+        plot.title = element_text(hjust = 0.08, vjust = 1, face = "bold", size = 14))
 
 # Print plot
 

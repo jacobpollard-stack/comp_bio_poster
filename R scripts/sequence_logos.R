@@ -55,8 +55,8 @@ logo_post <- ggseqlogo(pwm_post, method = 'bits', col_scheme = 'chemistry') +
   ggtitle('Post-pandemic') +
   theme(
     plot.title = element_text(hjust = 0.5, size = 16),
-    axis.text.x = element_text(size = 5, angle = 90)
-  ) +
+    axis.text.x = element_text(size = 5, angle = 90),
+    legend.position = 'none') +
   ylab('Bits') +
   scale_x_continuous(
     breaks = seq(1, length(vec), by = 1),
@@ -67,20 +67,12 @@ logo_post <- ggseqlogo(pwm_post, method = 'bits', col_scheme = 'chemistry') +
 
 combined_logos <- logo_pre / logo_post +
   plot_annotation(
-    title = 'Sequence Logos of Influenza Haemagglutinin',
-    subtitle = 'Comparing Sequences of Sialic Acid Binding Region in H1N1 
-    Haemagglutinin Before and After the 2009 Pandemic',
+    title = 'HA1 Sequence Logos of Sialic Acid Binding Region Pre- and Post-2009 H1N1pdm09 Pandemic',
     caption = 'Data Source: NCBI Influenza Virus Resource',
     theme = theme(
-      plot.title = element_text(
-        size = 22, face = "bold", hjust = 0.5, vjust = 1
-      ),
-      plot.subtitle = element_text(
-        size = 14, face = "bold", hjust = 0.5, vjust = 1
-      ),
-      plot.caption = element_text(size = 10, hjust = 0.5)
-    )
-  )
+      plot.title = element_text(face = "bold", hjust = 0.1),
+      plot.title.position = "plot",
+      plot.caption = element_text(size = 10)))
 
 combined_logos
 
