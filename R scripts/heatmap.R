@@ -7,13 +7,13 @@ library(msa)
 
 # Load MAFFT alignments
 
-pre2008_mafft_alm <- '/Users/jacobpollard/Documents/Uni/Biology/Second year/Sem 1/BABS/Poster/comp_bio_poster/FASTAs/alm/mafft_pre-2008_swine_NA.fasta'
-post2008_mafft_alm <- '/Users/jacobpollard/Documents/Uni/Biology/Second year/Sem 1/BABS/Poster/comp_bio_poster/FASTAs/alm/mafft_post-2008_human_NA.fasta'
+pre2008_mafft_alm <- 'FASTAs/alignments/mafft_pre-2008_swine_NA.fasta'
+post2008_mafft_alm <- 'FASTAs/alignments/mafft_post-2008_human_NA.fasta'
 
 # Make them msa objects
 
-seqs_pre2008 <- readAAStringSet('/Users/jacobpollard/Documents/Uni/Biology/Second year/Sem 1/BABS/Poster/comp_bio_poster/FASTAs/alm/mafft_pre-2008_swine_NA.fasta')
-seqs_post2008 <- readAAStringSet('/Users/jacobpollard/Documents/Uni/Biology/Second year/Sem 1/BABS/Poster/comp_bio_poster/FASTAs/alm/mafft_post-2008_human_NA.fasta')
+seqs_pre2008 <- readAAStringSet(pre2008_mafft_alm)
+seqs_post2008 <- readAAStringSet(post2008_mafft_alm)
 
 # Define cropping positions
 
@@ -21,8 +21,8 @@ start_pos <- 137
 end_pos <- 220
 start_pos1 <- 137
 end_pos1 <- 220
-start_pos2 <- 149
-end_pos2 <- 232
+start_pos2 <- 148
+end_pos2 <- 231
 
 # Defining a function to crop and split sequences into lists
 
@@ -101,7 +101,7 @@ type_colours <- c(
   Gap         = "#ffffff"
 )
 
-# Heatmap with letters and legend for type
+# Heatmap with letters and legend for AA type
 
 heatmap_plot <- ggplot(seq_df, aes(x = Position, y = Sequence, fill = Type)) +
   geom_tile(colour = "white") +
@@ -113,7 +113,9 @@ heatmap_plot <- ggplot(seq_df, aes(x = Position, y = Sequence, fill = Type)) +
   theme_minimal() +
   theme(axis.text.y = element_text(face = "bold"),
         axis.ticks.y = element_blank(),
-        panel.grid = element_blank())
+        panel.grid = element_blank(),
+        legend.text = element_text(size=5),
+        legend.key.size = unit(0.3, 'cm'))
 
 # Print plot
 
