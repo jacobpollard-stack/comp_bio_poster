@@ -86,7 +86,7 @@ aa_type <- c(
 )
 
 seq_df <- seq_df %>%
-  mutate(Type = aa_type[AA])
+  mutate(Type = ifelse(is.na(Type), "Gap", Type))
 
 # Define colours by type
 
@@ -103,7 +103,7 @@ type_colours <- c(
 
 heatmap_plot <- ggplot(seq_df, aes(x = Position, y = Sequence, fill = Type)) +
   geom_tile(colour = "white") +
-  geom_text(aes(label = AA), size = 3, fontface = "bold") +
+  geom_text(aes(label = AA), size = 3, colour = 'white') +
   scale_fill_manual(values = type_colours) +
   labs(title = "HA1 Consensus Alignment (137–220) Pre- and Post-2009 Pandemic",
        x = "Amino Acid Position", y = "Sequence",
@@ -112,8 +112,10 @@ heatmap_plot <- ggplot(seq_df, aes(x = Position, y = Sequence, fill = Type)) +
   theme(axis.text.y = element_text(face = "bold"),
         axis.ticks.y = element_blank(),
         panel.grid = element_blank(),
-        legend.text = element_text(size=5),
-        legend.key.size = unit(0.3, 'cm'))
+        legend.text = element_text(size = 9),
+        legend.key.size = unit(0.3, 'cm'),
+        legend.position = "bottom",,
+        plot.title = element_text(hjust = 0.14, vjust = 1, face = "bold", size = 14))
 
 # Print plot
 
@@ -121,5 +123,5 @@ heatmap_plot
 
 # Save heatmap
 
-ggsave("Figures/HA1_consensus_heatmap.png", heatmap_plot, width = 15, height = 1.5, dpi = 300)
+ggsave("Figures/HA1_consensus_heatmap.png", heatmap_plot, width = 15, height = 2, dpi = 300)
 
