@@ -71,7 +71,7 @@ write_fasta(cons_post_seq, "consensus_post", "consensus_post.fasta")
 
 seq_df <- data.frame(
   Position = rep(start_pos:end_pos, 2),
-  Sequence = rep(c("Pre-2009", "Post-2009"), each = end_pos-start_pos+1),
+  Sequence = rep(c("  Pre-2009", "Post-2009"), each = end_pos-start_pos+1),
   AA = c(cons_pre, cons_post)
 )
 
@@ -85,8 +85,9 @@ aa_type <- c(
   T = "Polar", W = "Hydrophobic", Y = "Polar", V = "Hydrophobic"
 )
 
-seq_df <- seq_df %>%
-  mutate(Type = ifelse(is.na(Type), "Gap", Type))
+seq_df <- seq_df  |> 
+  mutate(Type = aa_type[AA]) |> 
+  mutate(Type = ifelse(is.na(Type) | AA == "-", "Gap", Type))
 
 # Define colours by type
 
@@ -105,17 +106,22 @@ heatmap_plot <- ggplot(seq_df, aes(x = Position, y = Sequence, fill = Type)) +
   geom_tile(colour = "white") +
   geom_text(aes(label = AA), size = 3, colour = 'white') +
   scale_fill_manual(values = type_colours) +
-  labs(title = "HA1 Consensus Alignment of Sialic Acid Binding Region Pre- and Post-2009 H1N1pdm09 Pandemic",
-       x = "Amino Acid Position", y = "Sequence",
-       fill = "AA Type") +
+  scale_x_continuous(breaks = seq(start_pos, end_pos, 5)) +
+  labs(
+    title = "HA1 Consensus Alignment of Sialic Acid Binding Region Pre- and Post-2009 H1N1pdm09 Pandemic",
+    x = "Amino Acid Position", 
+    y = "Sequence",
+    fill = "AA Type") +
   theme_minimal() +
-  theme(axis.text.y = element_text(face = "bold"),
-        axis.ticks.y = element_blank(),
+  theme(axis.text.y = element_text(face = "bold",
+                                   hjust = 60),
+        axis.text.x = element_text(vjust = 2),
         panel.grid = element_blank(),
+        axis.title.y = element_text(hjust = 0.5, vjust = -13),
         legend.text = element_text(size = 9),
         legend.key.size = unit(0.3, 'cm'),
-        legend.position = "bottom",,
-        plot.title = element_text(hjust = 0.08, vjust = 1, face = "bold", size = 14))
+        legend.position = "bottom",
+        plot.title = element_text(hjust = 0.13, vjust = 1, face = "bold", size = 14))
 
 # Print plot
 

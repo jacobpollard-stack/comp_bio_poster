@@ -39,7 +39,7 @@ logo_pre <- ggseqlogo(pwm_pre, method = 'bits') +
   ggtitle('Pre-pandemic') +
   theme(plot.title = element_text(hjust = 0.5,
                                   size = 16),
-        axis.text.x = element_text(size = 5,
+        axis.text.x = element_text(size = 10,
                                    angle = 90),
         axis.title.x = element_blank(),
         legend.position = "none") +
@@ -54,8 +54,9 @@ logo_pre <- ggseqlogo(pwm_pre, method = 'bits') +
 logo_post <- ggseqlogo(pwm_post, method = 'bits', col_scheme = 'chemistry') +
   ggtitle('Post-pandemic') +
   theme(
+    axis.text.y = element_text(hjust = 1, margin = margin(r = 2)),
     plot.title = element_text(hjust = 0.5, size = 16),
-    axis.text.x = element_text(size = 5, angle = 90),
+    axis.text.x = element_text(size = 10, angle = 90),
     legend.position = 'none') +
   ylab('Bits') +
   scale_x_continuous(
