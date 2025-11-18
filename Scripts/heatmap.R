@@ -1,0 +1,137 @@
+library(Biostrings)
+library(tidyverse)
+library(ggseqlogo)
+library(patchwork)
+library(ggplot2)
+library(msa)
+
+# Load MAFFT alignments
+
+pre2008_mafft_alm <- 'Files/alignments/mafft_pre-2008_swine_NA.fasta'
+post2008_mafft_alm <- 'Files/alignments/mafft_post-2008_human_NA.fasta'
+
+# Make them msa objects
+
+seqs_pre2008 <- readAAStringSet(pre2008_mafft_alm)
+seqs_post2008 <- readAAStringSet(post2008_mafft_alm)
+
+# Define cropping positions
+
+start_pos <- 137
+end_pos <- 220
+start_pos1 <- 137
+end_pos1 <- 220
+start_pos2 <- 148
+end_pos2 <- 231
+
+# Defining a function to crop and split sequences into lists
+
+crop_and_split <- function(seqs, start, end) {
+  seqs_vec <- as.character(seqs)
+  alignment_list <- lapply(seqs_vec, function(s) {
+    chars <- strsplit(s, "")[[1]]
+    if(length(chars) < end) chars <- c(chars, rep("-", end - length(chars)))
+    chars[start:end]
+  })
+  alignment_list
+}
+
+# Crop sequences and split
+
+alignment_pre_list <- crop_and_split(seqs_pre2008, start_pos1, end_pos1)
+alignment_post_list <- crop_and_split(seqs_post2008, start_pos2, end_pos2)
+
+# Convert lists to matrices
+
+alignment_pre_mat <- do.call(rbind, alignment_pre_list)
+alignment_post_mat <- do.call(rbind, alignment_post_list)
+
+write_fasta <- function(seq, name, file) {
+  cat(paste0(">", name, "\n", seq, "\n"), file = file)
+}
+
+# Make consensus seqs
+
+cons_pre <- apply(alignment_pre_mat, 2, function(col) names(sort(table(col), decreasing=TRUE))[1])
+cons_post <- apply(alignment_post_mat, 2, function(col) names(sort(table(col), decreasing=TRUE))[1])
+
+# Convert character vectors to single strings
+
+cons_pre_seq <- paste(cons_pre, collapse = "")
+cons_post_seq <- paste(cons_post, collapse = "")
+
+# Write to FASTA file
+
+write_fasta <- function(seq, name, file) {
+  cat(paste0(">", name, "\n", seq, "\n"), file = file)
+}
+
+# Save each consensus sequence
+
+write_fasta(cons_pre_seq, "consensus_pre", "consensus_pre.fasta")
+write_fasta(cons_post_seq, "consensus_post", "consensus_post.fasta")
+
+# Define data frame for plotting
+
+seq_df <- data.frame(
+  Position = rep(start_pos:end_pos, 2),
+  Sequence = rep(c("  Pre-2009", "Post-2009"), each = end_pos-start_pos+1),
+  AA = c(cons_pre, cons_post)
+)
+
+# Amino acid colours
+
+aa_type <- c(
+  A = "Hydrophobic", R = "Basic", N = "Neutral", D = "Acidic",
+  C = "Polar", Q = "Neutral", E = "Acidic", G = "Polar",
+  H = "Basic", I = "Hydrophobic", L = "Hydrophobic", K = "Basic",
+  M = "Hydrophobic", F = "Hydrophobic", P = "Hydrophobic", S = "Polar",
+  T = "Polar", W = "Hydrophobic", Y = "Polar", V = "Hydrophobic"
+)
+
+seq_df <- seq_df  |> 
+  mutate(Type = aa_type[AA]) |> 
+  mutate(Type = ifelse(is.na(Type) | AA == "-", "Gap", Type))
+
+# Define colours by type
+
+type_colours <- c(
+  Hydrophobic = "#221E22",
+  Polar       = "#109648",
+  Acidic      = "#D62839",
+  Basic       = "#255C99",
+  Neutral     = "#5E239D",
+  Gap         = "#ffffff"
+)
+
+# Heatmap with letters and legend for AA type
+
+heatmap_plot <- ggplot(seq_df, aes(x = Position, y = Sequence, fill = Type)) +
+  geom_tile(colour = "white") +
+  geom_text(aes(label = AA), size = 3, colour = 'white') +
+  scale_fill_manual(values = type_colours) +
+  scale_x_continuous(breaks = seq(start_pos, end_pos, 5)) +
+  labs(
+    title = "HA1 Consensus Alignment of Sialic Acid Binding Region Pre- and Post-2009 H1N1pdm09 Pandemic",
+    x = "Amino Acid Position", 
+    y = "Sequence",
+    fill = "AA Type") +
+  theme_minimal() +
+  theme(axis.text.y = element_text(face = "bold",
+                                   hjust = 60),
+        axis.text.x = element_text(vjust = 2),
+        panel.grid = element_blank(),
+        axis.title.y = element_text(hjust = 0.5, vjust = -13),
+        legend.text = element_text(size = 9),
+        legend.key.size = unit(0.3, 'cm'),
+        legend.position = "bottom",
+        plot.title = element_text(hjust = 0.13, vjust = 1, face = "bold", size = 14))
+
+# Print plot
+
+heatmap_plot
+
+# Save heatmap
+
+ggsave("Figures/HA1_consensus_heatmap.png", heatmap_plot, width = 15, height = 2, dpi = 300)
+
