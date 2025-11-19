@@ -36,24 +36,24 @@ ha_ranges <- data.frame(
 )
 
 # Plot
-ggplot(df_filtered) +
+plot <- ggplot(df_filtered) +
   # Protein bars
   geom_rect(aes(xmin=start, xmax=end, ymin=0, ymax=1, fill=label), colour="black") +
-  geom_text(aes(x=start, y=1.05, label=start), size=3, angle=90, vjust=0) +
+  geom_text(aes(x=start, y=1.5, label=start), size=2, angle=90, hjust=0.9) +
   scale_fill_manual(values = fill_colors) +
   
   # Feature barred arrows (double-headed)
-  geom_segment(data=feature_ranges, aes(x=start, xend=end, y=-0.05, yend=-0.05),
+  geom_segment(data=feature_ranges, aes(x=start, xend=end, y=-0.45, yend=-0.45),
                arrow=arrow(length=unit(0.2, "cm"), ends="both", type="closed"),
                color="black", size=1) +
-  geom_text(data=feature_ranges, aes(x=(start+end)/2, y=-0.1, label=label), 
+  geom_text(data=feature_ranges, aes(x=(start+end)/2, y=-0.9, label=label), 
             size=3, vjust=1, hjust=0.5) +
   
   # HA1/HA2 barred arrows
-  geom_segment(data=ha_ranges, aes(x=start, xend=end, y=-0.25, yend=-0.25),
+  geom_segment(data=ha_ranges, aes(x=start, xend=end, y=-1.5, yend=-1.5),
                arrow=arrow(length=unit(0.2, "cm"), ends="both", type="closed"),
                color="black", size=1) +
-  geom_text(data=ha_ranges, aes(x=(start+end)/2, y=-0.3, label=label), 
+  geom_text(data=ha_ranges, aes(x=(start+end)/2, y=-1.95, label=label), 
             size=3, vjust=1, hjust=0.5) +
   
   # Theme adjustments
@@ -62,6 +62,13 @@ ggplot(df_filtered) +
         legend.title = element_blank(),
         plot.margin = margin(1,0.5,1,0.5, "cm")) +
   ggtitle("HA0 Protein Map of H1N1 consensus sequence") +
-  theme(plot.title = element_text(hjust = 0, vjust = 2, size=16, face="bold"))
+  theme(plot.title = element_text(hjust = 0.065, vjust = 2, size=16, face="bold"))
+
+# Decrease y coordinate of legend
+
+plot <- plot + guides(fill = guide_legend(nrow = 2, byrow = TRUE, title.position = "top", title.hjust = 0.5))
+
+
 # Save plot
-ggsave("HA0_protein_map_H1N1_consensus.jpg", width=15, height=2.5, dpi=300)
+ggsave("HA0_protein_map_H1N1_consensus.jpg", width=15, height=3, dpi=300)
+
