@@ -19,10 +19,10 @@ seqs_post2008 <- readAAStringSet(post2008_mafft_alm)
 
 start_pos <- 137
 end_pos <- 220
-start_pos1 <- 137
-end_pos1 <- 220
-start_pos2 <- 148
-end_pos2 <- 231
+start_pos1 <- 138
+end_pos1 <- 221
+start_pos2 <- 149
+end_pos2 <- 232
 
 # Defining a function to crop and split sequences into lists
 

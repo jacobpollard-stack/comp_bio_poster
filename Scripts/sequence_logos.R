@@ -8,18 +8,20 @@ library(reshape2)
 
 # Load aligned MAFFT seqs
 
-alm_pre <- readAAStringSet('/Users/jacobpollard/Documents/Uni/Biology/Second year/Sem 1/BABS/Poster/comp_bio_poster/FASTAs/alignments/mafft_pre-2008_swine_NA.fasta')
-alm_post <- readAAStringSet('/Users/jacobpollard/Documents/Uni/Biology/Second year/Sem 1/BABS/Poster/comp_bio_poster/FASTAs/alignments/mafft_post-2008_human_NA.fasta')
+alm_pre <- readAAStringSet('Files/alignments/mafft_pre-2008_swine_NA.fasta')
+alm_post <- readAAStringSet('Files/alignments/mafft_post-2008_human_NA.fasta')
 
 # Define sialic acid binding region
 
 start_pos <- 137
 end_pos <- 220
-start_pos2 <- 148
-end_pos2 <- 231
+start_pos1 <- 138
+end_pos2 <- 221
+start_pos2 <- 149
+end_pos2 <- 232
 
 # Function to crop sequences
-crop_pre <- subseq(alm_pre, start = start_pos, end = end_pos)
+crop_pre <- subseq(alm_pre, start = start_pos1, end = end_pos1)
 crop_post <- subseq(alm_post, start = start_pos2, end = end_pos2)
 
 # Create position weight matrix
@@ -61,12 +63,12 @@ logo_post <- ggseqlogo(pwm_post, method = 'bits', col_scheme = 'chemistry') +
   ylab('Bits') +
   scale_x_continuous(
     breaks = seq(1, length(vec), by = 1),
-    labels = seq(start_pos2, end_pos2, by = 1)
+    labels = seq(start_pos, end_pos, by = 1)
   )
 
 # Combine plots
 
-combined_logos <- logo_pre / logo_post +
+combined_logos <- logo_post / logo_pre +
   plot_annotation(
     title = 'HA1 Sequence Logos of Sialic Acid Binding Region Pre- and Post-2009 H1N1pdm09 Pandemic',
     caption = 'Data Source: NCBI Influenza Virus Resource',
@@ -80,3 +82,4 @@ combined_logos
 # Save combined plot
 
 ggsave('Figures/sequence_logos.png', combined_logos, width = 15, height = 5, dpi = 300)
+
