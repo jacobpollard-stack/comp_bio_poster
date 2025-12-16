@@ -17,12 +17,12 @@ seqs_post2008 <- readAAStringSet(post2008_mafft_alm)
 
 # Define cropping positions
 
-start_pos <- 137
-end_pos <- 220
-start_pos1 <- 138
-end_pos1 <- 221
-start_pos2 <- 149
-end_pos2 <- 232
+start_pos <- 130
+end_pos <- 230
+start_pos1 <- 131
+end_pos1 <- 231
+start_pos2 <- 142
+end_pos2 <- 242
 
 # Defining a function to crop and split sequences into lists
 
@@ -126,6 +126,51 @@ heatmap_plot <- ggplot(seq_df, aes(x = Position, y = Sequence, fill = Type)) +
         legend.key.size = unit(0.3, 'cm'),
         legend.position = "bottom",
         plot.title = element_text(hjust = 0.13, vjust = 1, face = "bold", size = 14))
+
+# Add annotations
+
+regions <- tibble(
+  xmin = c(133, 190, 217),
+  xmax = c(138, 195, 230),
+  label = c("130 loop", "190 helix", "220 loop"),
+  y = c(3, 3, 3)
+)
+
+heatmap_plot <- heatmap_plot +
+  geom_segment(
+    data = regions,
+    inherit.aes = FALSE,
+    aes(
+      x = xmin,
+      xend = xmax,
+      y = y,
+      yend = y
+    ),
+    arrow = arrow(
+      length = unit(0.15, "cm"),
+      ends = "both",
+      type = "closed"
+    ),
+    linewidth = 0.6
+  )
+
+heatmap_plot <- heatmap_plot +
+  geom_text(
+    data = regions,
+    inherit.aes = FALSE,
+    aes(
+      x = (xmin + xmax) / 2,
+      y = y + 0.6,
+      label = label
+    ),
+    size = 3,
+    fontface = "bold"
+  )
+
+heatmap_plot <- heatmap_plot +
+  coord_cartesian(clip = "off") +
+  theme(plot.margin = margin(t = 20, r = 5, b = 5, l = 5))
+
 
 # Print plot
 
