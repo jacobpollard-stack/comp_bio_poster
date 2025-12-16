@@ -114,15 +114,20 @@ tree_pruned <- drop.tip(tree_bs, c("QCT08133", "QCT08134"))
 
 # Metadata must match pruned tips
 meta_tree_pruned <- meta_thin %>%
-  transmute(label = accession, host, year) %>%
+  transmute(label = accession, host, year, name, date) %>%
   filter(label %in% tree_pruned$tip.label)
+
+meta_tree_pruned <- meta_tree_pruned %>%
+  mutate(strain = str_extract(name, "A/.+?\\)"))
 
 # Plot with bootstrap labels on internal nodes
 p_pruned <- ggtree(tree_pruned) %<+% meta_tree_pruned +
   geom_tree(aes(colour = host), size = 1) +
-  geom_tiplab(aes(colour = host), size = 2.5) +
-  geom_text2(aes(subset = !isTip, label = label), hjust = -0.3, size = 2.5) +
+  geom_tiplab(aes(label = strain, colour = host), size = 3) +
   scale_color_manual(values = c(human = "#1f78b4", swine = "#e31a1c")) +
   theme_tree2()
 
 p_pruned
+
+# Save the plot
+ggsave("Figures/ha_phylo_tree_pruned.png", p_pruned, width = 10, height = 12, dpi = 300)
